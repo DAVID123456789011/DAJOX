@@ -1,4 +1,5 @@
-const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
+const GOOGLE_CLIENT_ID = (typeof window !== "undefined" && window.CAMPUS_GOOGLE_CLIENT_ID)
+  || "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
 const GMAIL_REGEX = /^[^\s@]+@gmail\.com$/i;
 const API_BASE = "http://localhost:3000";
 
@@ -463,6 +464,24 @@ async function loginAsRole(role, email, password) {
   return false;
 }
 
+function handleGoogleLogin() {
+  if (!window.google || !window.google.accounts || !google.accounts.id) {
+    showLoginStatus("Google aún no está listo. Intenta nuevamente o usa la cuenta real de Gmail.", true);
+    return;
+  }
+
+  if (!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID.includes("YOUR_")) {
+    showLoginStatus("Google no está configurado. Asigna tu Client ID real en window.CAMPUS_GOOGLE_CLIENT_ID o en la constante GOOGLE_CLIENT_ID.", true);
+    return;
+  }
+
+  google.accounts.id.prompt((notification) => {
+    if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+      showLoginStatus("Se requiere una cuenta Google real para continuar.", true);
+    }
+  });
+}
+
 function loadGoogleClient() {
   if (window.google && window.google.accounts) {
     return;
@@ -482,25 +501,27 @@ function loadGoogleClient() {
               atob(response.credential.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))
             );
             const email = payload.email || "";
+
+            if (!canUseGmail(email)) {
+              showLoginStatus("Se requiere una cuenta Gmail real para entrar al sistema.", true);
+              return;
+            }
+
             loginAsStudent(email);
           } catch (error) {
-            loginAsStudent("estudiante@gmail.com");
+            showLoginStatus("La sesión de Google no se pudo verificar. Inicia sesión con tu cuenta real.", true);
           }
         }
       });
+    } else {
+      showLoginStatus("Google no está configurado. Debes iniciar sesión con una cuenta Gmail real.", true);
     }
+  };
+  script.onerror = () => {
+    showLoginStatus("No se pudo cargar Google Identity Services. Intenta de nuevo.", true);
   };
 
   document.head.appendChild(script);
-}
-
-function handleGoogleLogin() {
-  if (window.google && window.google.accounts && GOOGLE_CLIENT_ID && !GOOGLE_CLIENT_ID.includes("YOUR_")) {
-    google.accounts.id.prompt();
-    return;
-  }
-
-  loginAsStudent("estudiante@gmail.com");
 }
 
 function bindEvents() {
