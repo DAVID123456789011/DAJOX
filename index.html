@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Campus Nocturno</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="theme-dark">
+    <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+    <div id="auth-screen" class="screen active">
+      <div class="page-shell">
+        <section class="panel left-panel">
+          <div class="content-wrap">
+            <p class="eyebrow">CAMPUS NOCTURNO</p>
+            <h1>Tu salón de<br />clases,<br />siempre<br />encendido.</h1>
+            <p class="description">
+              Proyectos, exámenes con calificación instantánea y presencia en tiempo real,
+              en un solo lugar.
+            </p>
+            <div class="status-pill">
+              <span class="status-dot"></span>
+              <span>6 estudiantes conectándose ahora</span>
+            </div>
+          </div>
+        </section>
+
+        <div class="divider" aria-hidden="true"></div>
+
+        <section class="panel right-panel">
+          <button id="personalBtn" class="personal-btn" type="button">Personal</button>
+
+          <aside id="personalPanel" class="personal-panel" aria-hidden="true">
+            <div class="personal-panel-header">
+              <h3>Entrar como</h3>
+              <button id="closePersonalPanel" class="close-panel" type="button" aria-label="Cerrar panel">×</button>
+            </div>
+
+            <div class="role-choice-grid">
+              <button type="button" class="role-choice active" data-personal-role="teacher">Profesor</button>
+              <button type="button" class="role-choice" data-personal-role="admin">Administrador</button>
+              <button type="button" class="role-choice" data-personal-role="owner">Propietario</button>
+            </div>
+
+            <form id="personalForm" class="personal-form">
+              <input id="personalEmail" type="email" placeholder="Correo institucional" required />
+              <input id="personalPassword" type="password" placeholder="Contraseña" required />
+              <button type="submit">Entrar</button>
+            </form>
+          </aside>
+
+          <div class="login-box">
+            <div class="brand-row">
+              <div class="brand-badge" aria-hidden="true">✦</div>
+              <span class="brand-name">Campus Nocturno</span>
+            </div>
+
+            <p class="login-label">Ingresa con tu cuenta de Gmail institucional.</p>
+            <p id="loginStatus" class="login-status" aria-live="polite"></p>
+
+            <button id="googleLoginBtn" class="google-btn" type="button">
+              <svg class="google-icon" viewBox="0 0 48 48" aria-hidden="true">
+                <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20c10.493 0 19.438-7.622 19.438-18.5 0-1.381-.195-2.761-.437-4.083z"/>
+                <path fill="#FF3D00" d="M6.306 14.691l6.571 4.816C14.655 16.108 18.961 13 24 13c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.1 4 9.128 8.974 6.306 14.691z"/>
+                <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.194l-6.19-5.238A11.97 11.97 0 0 1 24 36c-5.222 0-9.65-3.356-11.28-8.016l-6.506 5.02C9.488 39.556 16.199 44 24 44z"/>
+                <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.66 5.818l6.19 5.238C40.7 39.627 44 34.146 44 28c0-1.381-.195-2.761-.437-4.083z"/>
+              </svg>
+              <span>Continuar con Google</span>
+            </button>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div id="app-screen" class="screen">
+      <header class="app-header">
+        <div class="app-brand">
+          <span class="brand-badge app-brand-mark">✦</span>
+          <span>Campus Nocturno</span>
+        </div>
+
+        <div class="header-actions">
+          <button id="themeToggle" class="header-btn theme-btn" type="button">🌙</button>
+          <span id="userBadge" class="user-badge">Estudiante</span>
+          <button id="logoutBtn" class="header-btn" type="button">Cerrar sesión</button>
+        </div>
+      </header>
+
+      <nav class="app-tabs" aria-label="Navegación del dashboard">
+        <button class="tab active" data-role="student" type="button">Estudiante</button>
+        <button class="tab" data-role="teacher" type="button">Profesor</button>
+        <button class="tab" data-role="admin" type="button">Administrador</button>
+        <button class="tab" data-role="owner" type="button">Propietario</button>
+      </nav>
+
+      <main class="dashboard">
+        <section class="view-panel active" data-role-view="student">
+          <h2>Tu salón, en vivo</h2>
+          <p>Mira quién está conectado, sigue tus proyectos y resuelve tus exámenes.</p>
+
+          <div class="stats-grid">
+            <article class="stat-card"><strong>24</strong><span>Unidos a la clase</span></article>
+            <article class="stat-card"><strong>16</strong><span>En línea ahora</span></article>
+            <article class="stat-card accent"><strong>8</strong><span>Fuera de línea</span></article>
+          </div>
+
+          <div class="two-column-grid">
+            <div class="panel-card">
+              <h3>Mis proyectos</h3>
+              <div class="project-item">
+                <h4>Portal de entregas</h4>
+                <p>Diseño del dashboard con integración de tareas y calificaciones.</p>
+              </div>
+              <div class="project-item">
+                <h4>Sensor IoT</h4>
+                <p>Monitoreo de temperatura con Arduino y lectura en tiempo real.</p>
+              </div>
+            </div>
+
+            <div class="panel-card">
+              <h3>En línea ahora</h3>
+              <ul class="online-list">
+                <li><span class="presence-dot"></span>Valentina R.</li>
+                <li><span class="presence-dot"></span>Camilo P.</li>
+                <li><span class="presence-dot"></span>Sara G.</li>
+                <li><span class="presence-dot"></span>Andrés M.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="panel-card">
+            <h3>Exámenes y talleres</h3>
+            <div class="exam-row">
+              <div>
+                <strong>Fundamentos de Firebase</strong>
+                <p>6 preguntas · 12 min</p>
+              </div>
+              <button class="mini-btn" type="button">Resolver</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="view-panel" data-role-view="teacher">
+          <h2>Panel del profesor</h2>
+          <p>Crea tus clases y publica exámenes con preguntas y respuestas.</p>
+
+          <div class="two-column-grid">
+            <div class="panel-card">
+              <h3>Crear clase</h3>
+              <form id="classForm" class="mini-form">
+                <input id="className" type="text" placeholder="Nombre de la clase" required />
+                <input id="classDescription" type="text" placeholder="Descripción" required />
+                <button type="submit">Crear clase</button>
+              </form>
+            </div>
+
+            <div class="panel-card">
+              <h3>Mis clases</h3>
+              <div id="teacherClassList" class="stack-list">
+                <div class="class-item">
+                  <strong>Programación Web</strong>
+                  <span>HTML, CSS y JavaScript</span>
+                </div>
+                <div class="class-item">
+                  <strong>Cálculo Integral</strong>
+                  <span>Límites, derivadas e integrales</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-card">
+            <h3>Constructor de exámenes</h3>
+            <form id="examForm" class="question-builder">
+              <input id="examQuestion" type="text" placeholder="Pregunta" required />
+              <div class="option-grid">
+                <input type="text" class="exam-option" placeholder="Opción A" required />
+                <input type="text" class="exam-option" placeholder="Opción B" required />
+                <input type="text" class="exam-option" placeholder="Opción C" required />
+                <input type="text" class="exam-option" placeholder="Opción D" required />
+              </div>
+              <label class="correct-picker">
+                <span>Respuesta correcta</span>
+                <select id="correctAnswer">
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                  <option value="C">C</option>
+                  <option value="D">D</option>
+                </select>
+              </label>
+              <button type="submit">Publicar examen</button>
+            </form>
+          </div>
+        </section>
+
+        <section class="view-panel" data-role-view="admin">
+          <h2>Panel de administración</h2>
+          <p id="adminWelcome">Gestiona usuarios, clases y permisos del campus.</p>
+
+          <div id="adminPermissionSections" class="admin-sections"></div>
+        </section>
+
+        <section class="view-panel" data-role-view="owner">
+          <h2>Panel de propietario</h2>
+          <p>Acceso completo y control total del entorno académico.</p>
+
+          <div class="stats-grid owner-grid">
+            <article class="stat-card"><strong>38</strong><span>Usuarios</span></article>
+            <article class="stat-card"><strong>6</strong><span>Clases</span></article>
+            <article class="stat-card"><strong>21</strong><span>Proyectos</span></article>
+            <article class="stat-card accent"><strong>9</strong><span>Exámenes</span></article>
+          </div>
+
+          <div class="two-column-grid">
+            <div class="panel-card">
+              <h3>Crear cuenta de administrador</h3>
+              <form id="adminCreateForm" class="mini-form">
+                <input id="ownerAdminName" type="text" placeholder="Nombre" required />
+                <input id="ownerAdminEmail" type="email" placeholder="Correo" required />
+                <input id="ownerAdminPassword" type="password" placeholder="Contraseña" required />
+                <div class="permission-checklist">
+                  <label><input type="checkbox" value="createTeachers" checked /> Crear cuentas de profesor</label>
+                  <label><input type="checkbox" value="createClasses" checked /> Crear clases</label>
+                  <label><input type="checkbox" value="viewClasses" checked /> Ver todas las clases</label>
+                  <label><input type="checkbox" value="editClasses" /> Editar clases</label>
+                </div>
+                <button type="submit">Crear administrador</button>
+              </form>
+            </div>
+
+            <div class="panel-card">
+              <h3>Administradores creados</h3>
+              <div id="ownerAdminList" class="admin-list"></div>
+            </div>
+          </div>
+
+          <div class="panel-card">
+            <h3>Clases del sistema</h3>
+            <div id="ownerClassList" class="stack-list"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
