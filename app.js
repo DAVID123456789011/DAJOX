@@ -15,6 +15,12 @@ const state = {
   userName: "Estudiante",
   selectedPersonalRole: "teacher",
   adminPermissions: ["createTeachers", "createClasses", "viewClasses", "editClasses"],
+  ownerProfile: {
+    id: 0,
+    name: "David Gaona",
+    email: "davidgaona814@gmail.com",
+    permissions: ["createTeachers", "createClasses", "viewClasses", "editClasses"]
+  },
   ownerAdmins: [
     { id: 1, name: "Laura Gómez", email: "laura@campus.com", permissions: ["createTeachers", "createClasses", "viewClasses", "editClasses"] },
     { id: 2, name: "Marco Ruiz", email: "marco@campus.com", permissions: ["createClasses", "viewClasses"] },
@@ -157,6 +163,22 @@ async function loadDatabaseData() {
 function renderOwnerAdmins() {
   if (!ui.ownerAdminList) return;
 
+  const ownerCard = `
+    <div class="org-node org-owner">
+      <div class="org-node-head">
+        <span class="node-tag">👑</span>
+        <span>${state.ownerProfile.name}</span>
+      </div>
+      <div class="node-meta">${state.ownerProfile.email}</div>
+      <div class="tag-list">
+        ${getAdminPermissionsLabel(state.ownerProfile.permissions)
+          .map((permission) => `<span class="admin-tag">${permission}</span>`)
+          .join("")}
+      </div>
+      <button class="mini-btn" type="button" data-owner-enter="${state.ownerProfile.email}">Entrar como</button>
+    </div>
+  `;
+
   const adminCards = state.ownerAdmins
     .map(
       (admin) => `
@@ -180,10 +202,7 @@ function renderOwnerAdmins() {
   ui.ownerAdminList.innerHTML = `
     <div class="org-chart">
       <div class="org-level top-level">
-        <div class="org-node org-owner">
-          <span class="node-tag">👑</span>
-          <span>PROPIETARIO</span>
-        </div>
+        ${ownerCard}
       </div>
       <div class="org-level mid-level">
         ${adminCards}
@@ -205,6 +224,19 @@ function renderOwnerAdmins() {
       </div>
     </div>
   `;
+
+  ui.ownerAdminList.querySelectorAll("[data-owner-enter]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const email = String(button.dataset.ownerEnter || "").trim();
+      if (!email) return;
+      state.currentRole = "owner";
+      state.userName = state.ownerProfile.name;
+      state.adminPermissions = [...state.ownerProfile.permissions];
+      setActiveTab("owner");
+      showScreen("app");
+      showToast(`Ingresaste como ${state.ownerProfile.name}`, "success");
+    });
+  });
 
   ui.ownerAdminList.querySelectorAll("[data-admin-enter]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -395,10 +427,19 @@ function loginAsStudent(email) {
 
   const normalizedEmail = email.trim();
   state.userName = normalizedEmail.split("@")[0] || "Estudiante";
+  state.currentRole = "student";
   showLoginStatus("");
   setActiveTab("student");
   showScreen("app");
   return true;
+}
+
+function isFixedOwnerEmail(email) {
+  return typeof email === "string" && email.trim().toLowerCase() === state.ownerProfile.email.toLowerCase();
+}
+
+function isAllowedAdminEmail(email) {
+  return state.ownerAdmins.some((admin) => admin.email.trim().toLowerCase() === String(email).trim().toLowerCase());
 }
 
 async function loginAsRole(role, email, password) {
@@ -409,6 +450,16 @@ async function loginAsRole(role, email, password) {
 
   const normalizedEmail = email.trim();
   state.userName = normalizedEmail.split("@")[0] || "Usuario";
+
+  if (role === "owner" && !isFixedOwnerEmail(normalizedEmail)) {
+    showToast("Cuenta no autorizada. Has ingresado como estudiante.", "warning");
+    return loginAsStudent(normalizedEmail);
+  }
+
+  if (role === "admin" && !isAllowedAdminEmail(normalizedEmail)) {
+    showToast("Cuenta no autorizada. Has ingresado como estudiante.", "warning");
+    return loginAsStudent(normalizedEmail);
+  }
 
   try {
     const endpoint = role === "teacher" ? "/api/login/teacher" : role === "admin" ? "/api/login/admin" : "/api/login/owner";
@@ -421,6 +472,10 @@ async function loginAsRole(role, email, password) {
     const payload = await response.json();
 
     if (!response.ok) {
+      const fallbackStudent = loginAsStudent(normalizedEmail);
+      if (fallbackStudent) {
+        showToast("No autorizado. Acceso como estudiante.", "warning");
+      }
       showLoginStatus(payload.error || "Credenciales inválidas.", true);
       return false;
     }
@@ -448,7 +503,7 @@ async function loginAsRole(role, email, password) {
 
     if (role === "owner") {
       state.currentRole = "owner";
-      state.userName = payload.user.name || "Propietario";
+      state.userName = state.ownerProfile.name;
       setActiveTab("owner");
       showScreen("app");
       showLoginStatus("");
@@ -456,6 +511,10 @@ async function loginAsRole(role, email, password) {
       return true;
     }
   } catch (error) {
+    const fallbackStudent = loginAsStudent(normalizedEmail);
+    if (fallbackStudent) {
+      showToast("No autorizado. Acceso como estudiante.", "warning");
+    }
     showLoginStatus("No se pudo conectar con la base de datos.", true);
     console.error("Login request failed:", error);
     return false;
