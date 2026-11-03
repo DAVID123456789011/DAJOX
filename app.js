@@ -164,30 +164,30 @@ function renderOwnerAdmins() {
   if (!ui.ownerAdminList) return;
 
   const ownerCard = `
-    <div class="org-node org-owner">
-      <div class="org-node-head">
-        <span class="node-tag">👑</span>
-        <span>${state.ownerProfile.name}</span>
+    <div class="admin-card" style="background: linear-gradient(135deg, rgba(22, 100, 148, 0.92), rgba(42, 112, 184, 0.88)); border-color: rgba(112, 194, 255, 0.5);">
+      <div class="card-action-row" style="justify-content: flex-start; margin-bottom: 0.2rem;">
+        <span class="brand-badge" style="width: 2.1rem; height: 2.1rem; font-size: 1rem;">👑</span>
+        <strong style="font-size: 1.2rem;">${state.ownerProfile.name}</strong>
       </div>
-      <div class="node-meta">${state.ownerProfile.email}</div>
+      <p style="margin-top: 0.2rem;">${state.ownerProfile.email}</p>
       <div class="tag-list">
         ${getAdminPermissionsLabel(state.ownerProfile.permissions)
           .map((permission) => `<span class="admin-tag">${permission}</span>`)
           .join("")}
       </div>
-      <button class="mini-btn" type="button" data-owner-enter="${state.ownerProfile.email}">Entrar como</button>
+      <button class="mini-btn" type="button" data-owner-enter="${state.ownerProfile.email}" style="margin-top: 0.4rem;">Entrar como</button>
     </div>
   `;
 
   const adminCards = state.ownerAdmins
     .map(
       (admin) => `
-        <div class="org-node org-admin">
-          <div class="org-node-head">
-            <span class="node-tag">👤</span>
-            <span>${admin.name}</span>
+        <div class="admin-card">
+          <div class="card-action-row" style="justify-content: flex-start; gap: 0.55rem; margin-bottom: 0.25rem;">
+            <span class="brand-badge" style="width: 2rem; height: 2rem; font-size: 0.9rem;">👤</span>
+            <strong>${admin.name}</strong>
           </div>
-          <div class="node-meta">${admin.email}</div>
+          <p>${admin.email}</p>
           <div class="tag-list">
             ${getAdminPermissionsLabel(admin.permissions)
               .map((permission) => `<span class="admin-tag">${permission}</span>`)
@@ -200,28 +200,9 @@ function renderOwnerAdmins() {
     .join("");
 
   ui.ownerAdminList.innerHTML = `
-    <div class="org-chart">
-      <div class="org-level top-level">
-        ${ownerCard}
-      </div>
-      <div class="org-level mid-level">
-        ${adminCards}
-      </div>
-      <div class="org-level lower-level">
-        ${Array.from({ length: 3 }, (_, index) => `
-          <div class="org-node org-teacher">
-            <div class="org-node-head">
-              <span class="node-tag">📚</span>
-              <span>PROFESOR ${index + 1}</span>
-            </div>
-            <div class="class-badges">
-              <span class="class-badge">CLASES</span>
-              <span class="class-badge">CLASES</span>
-              <span class="class-badge">CLASES</span>
-            </div>
-          </div>
-        `).join("")}
-      </div>
+    <div class="stack-list">
+      ${ownerCard}
+      ${adminCards}
     </div>
   `;
 
